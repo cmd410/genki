@@ -12,9 +12,24 @@ It is still in **very early stages of development**. Please, do not use it for r
 from genki import Client
 
 if __name__ == '__main__':
-    c = Client()
-    response = c.get('http://example.com/').result()
+    c = Client()  # Create instance of client
+    response = c.get('http://example.com/').result()   # .result() waits for answer while your program can do other stuff
     print(response.body)
+```
+or
+```python
+from genki import Client
+
+
+if __name__ == '__main__':
+    # Creating context for client
+    with Client(timeout=2) as c:
+        # Start asynchronous requsets
+        req2 = c.get('https://example.com')
+        ...
+
+    # When context exits client makes sure all requests are comleted
+    print(req2.result())  # Does not wait, request already finished
 ```
 
 ## Future plans

@@ -19,6 +19,8 @@ class Method(str, Enum):
 
 
 class Code(IntEnum):
+    REQUEST_CANCELLED = 0
+
     CONTINUE = 100
     SWITCHING_PROTOCOLS = 101
     PROCESSING = 102
