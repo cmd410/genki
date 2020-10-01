@@ -4,7 +4,7 @@ from .headers import Headers
 from .constants import Code
 
 
-class Responce:
+class Response:
     
     __slots__ = (
         'source',

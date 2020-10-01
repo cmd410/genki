@@ -6,7 +6,7 @@ from gevent import socket, ssl, spawn
 from .headers import Headers
 from .constants import Method, Code, Protocol
 from .util import parse_url
-from .responce import Responce
+from .response import Response
 
 logger = getLogger('genki')
 
@@ -25,7 +25,7 @@ def request(url:str,
             method: Method=Method.GET,
             body: Union[bytes, bytearray, str]=b'',
             follow_redirects=True
-            ) -> Responce:
+            ) -> Response:
     logger.debug(f'Requesting: {url}')
     proto, host, path, port = parse_url(url)
     first_line = f'{method} {path} HTTP/1.1\r\n'
@@ -46,28 +46,28 @@ def request(url:str,
     
     sock.sendall(request_bytes)
 
-    responce = b''
-    while b'\r\n\r\n' not in responce:
-        responce += sock.recv(512)
+    response = b''
+    while b'\r\n\r\n' not in response:
+        response += sock.recv(512)
     
-    r_headers_bytes, r_body_bytes = responce.split(b'\r\n\r\n', maxsplit=1)
+    r_headers_bytes, r_body_bytes = response.split(b'\r\n\r\n', maxsplit=1)
 
-    responce_headers = Headers.from_bytes(responce)
+    response_headers = Headers.from_bytes(response)
 
-    body_length = responce_headers.get('Content-Length', 0)
+    body_length = response_headers.get('Content-Length', 0)
 
     while len(r_body_bytes) < body_length:
         r_body_bytes += sock.recv(512)
 
     sock.close()
 
-    responce = Responce(url,
-                        responce[:responce.find(b'\r\n')].decode(),
-                        responce_headers,
+    response = Response(url,
+                        response[:response.find(b'\r\n')].decode(),
+                        response_headers,
                         r_body_bytes)
 
-    if 300 <= responce.status_code < 400 and follow_redirects:
-        new_location = responce.headers.get("Location")
+    if 300 <= response.status_code < 400 and follow_redirects:
+        new_location = response.headers.get("Location")
         logger.debug(f'Being redirected to: {new_location}')
         return spawn(request,
                      new_location,
@@ -76,4 +76,4 @@ def request(url:str,
                      body=body,
                      follow_redirects=follow_redirects).get()
 
-    return responce
+    return response

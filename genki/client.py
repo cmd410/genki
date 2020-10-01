@@ -1,6 +1,6 @@
 from gevent import spawn, Greenlet
 
-from .http import request, Responce, Method
+from .http import request, Response, Method
 
 
 class Client:
