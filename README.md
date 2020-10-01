@@ -13,7 +13,7 @@ from genki import Client
 
 if __name__ == '__main__':
     c = Client()
-    response = c.get('http://example.com/').get()
+    response = c.get('http://example.com/').result()
     print(response.body)
 ```
 
