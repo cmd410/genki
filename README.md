@@ -13,7 +13,9 @@ from genki import Client
 
 if __name__ == '__main__':
     c = Client()  # Create instance of client
-    response = c.get('http://example.com/').result()   # .result() waits for answer while your program can do other stuff
+    
+    # .result() waits for answer while your program can do other stuff
+    response = c.get('http://example.com/').result()   
     print(response.body)
 ```
 or
@@ -34,9 +36,7 @@ if __name__ == '__main__':
 
 ## Future plans
 
-- Get more convenient methods for accessing the world wide web 
 - Support for URL parameters
-- Automatically jsonify body data when needed
 - Support more standards
 
 ## Contributing
