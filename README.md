@@ -30,7 +30,7 @@ if __name__ == '__main__':
         req2 = c.get('https://example.com')
         ...
 
-    # When context exits client makes sure all requests are comleted
+    # When context exits client makes sure all requests are completed
     print(req2.result())  # Does not wait, request already finished
 ```
 
