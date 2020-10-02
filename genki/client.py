@@ -47,6 +47,8 @@ class Client:
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
+        """Perform GET request
+        """
         timeout = timeout or self.timeout
         req = get(
             url=url,
@@ -64,6 +66,8 @@ class Client:
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
+        """Perform POST request
+        """
         timeout = timeout or self.timeout
 
         req = post(
@@ -82,6 +86,8 @@ class Client:
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
+        """Perform PATCH request
+        """
         timeout = timeout or self.timeout
 
         req = patch(
@@ -100,6 +106,8 @@ class Client:
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
+        """Perform PUT request
+        """
         timeout = timeout or self.timeout
 
         req = put(
@@ -118,6 +126,8 @@ class Client:
                headers: Headers = Headers(),
                timeout: Optional[float] = None
                ) -> AsyncRequest:
+        """Perform DELETE request
+        """
         timeout = timeout or self.timeout
 
         req = delete(
@@ -136,6 +146,8 @@ class Client:
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
+        """Perform OPTIONS request
+        """
         timeout = timeout or self.timeout
 
         req = options(
@@ -154,6 +166,8 @@ class Client:
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
+        """Perform HEAD request
+        """
         timeout = timeout or self.timeout
 
         req = head(
@@ -172,6 +186,8 @@ class Client:
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
+        """Perform TRACE request
+        """
         timeout = timeout or self.timeout
 
         req = trace(
@@ -190,6 +206,8 @@ class Client:
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
+        """Perform CONNECT request
+        """
         timeout = timeout or self.timeout
 
         req = connect(
