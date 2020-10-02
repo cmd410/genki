@@ -38,6 +38,7 @@ class Client:
             for i in self._requests
             if not i.is_done
         ])
+        self._requests.clear()
 
     def get(self,
             url,
