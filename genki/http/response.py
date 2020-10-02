@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from .headers import Headers
 from .constants import Code
@@ -18,7 +18,7 @@ class Response:
                  source: str,
                  status_line: str,
                  headers: Headers,
-                 body: bytes):
+                 body: Union[bytes,]):
         self.http_version, status_code_str, *_ = status_line.split()
         self.status_code = Code(int(status_code_str))
         self.source = source
@@ -29,15 +29,15 @@ class Response:
         return f'{self.__class__.__name__}({self.status_code})'
 
     @property
-    def body(self) -> bytes:
+    def body(self) -> Union[bytes, str]:
         charset = self.charset
         if charset:
             return self._body.decode(charset)
         return self._body
 
     @property
-    def content_type(self) -> Optional[str]:
-        return self.headers.get('Content-Type')
+    def content_type(self) -> str:
+        return self.headers.get('Content-Type', '')
 
     @property
     def is_html(self) -> bool:

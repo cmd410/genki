@@ -43,7 +43,7 @@ class Client:
     def get(self,
             url,
             data=None,
-            params=None,
+            params: dict = None,
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
@@ -62,7 +62,7 @@ class Client:
     def post(self,
              url,
              data=None,
-             params=None,
+             params: dict = None,
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
@@ -82,7 +82,7 @@ class Client:
     def patch(self,
               url,
               data=None,
-              params=None,
+              params: dict = None,
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
@@ -102,7 +102,7 @@ class Client:
     def put(self,
             url,
             data=None,
-            params=None,
+            params: dict = None,
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
@@ -122,7 +122,7 @@ class Client:
     def delete(self,
                url,
                data=None,
-               params=None,
+               params: dict = None,
                headers: Headers = Headers(),
                timeout: Optional[float] = None
                ) -> AsyncRequest:
@@ -142,7 +142,7 @@ class Client:
     def options(self,
                 url,
                 data=None,
-                params=None,
+                params: dict = None,
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
@@ -162,7 +162,7 @@ class Client:
     def head(self,
              url,
              data=None,
-             params=None,
+             params: dict = None,
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
@@ -182,7 +182,7 @@ class Client:
     def trace(self,
               url,
               data=None,
-              params=None,
+              params: dict = None,
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
@@ -202,7 +202,7 @@ class Client:
     def connect(self,
                 url,
                 data=None,
-                params=None,
+                params: dict = None,
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
