@@ -3,6 +3,7 @@ from typing import Union, Optional
 from contextlib import suppress
 
 from gevent import socket, ssl, spawn, Greenlet, GreenletExit
+from gevent.util import wrap_errors
 
 from .headers import Headers
 from .constants import Method, Protocol
@@ -10,6 +11,13 @@ from .util import parse_url
 from .response import Response
 
 logger = getLogger('genki')
+
+
+def expect(errs):
+    errs = tuple(errs)
+    def decorator(func):
+        return wrap_errors(errs, func)
+    return decorator
 
 
 def encode_body(body: Union[bytes, bytearray, str]) -> bytes:
@@ -23,6 +31,11 @@ def encode_body(body: Union[bytes, bytearray, str]) -> bytes:
         raise TypeError(f'Cannot encode body of type {type(body).__name__}')
 
 
+@expect((socket.timeout,
+         ConnectionRefusedError,
+         ConnectionError,
+         ConnectionAbortedError,
+         ConnectionResetError))
 def request(url: str,
             headers: Headers = Headers(),
             method: Method = Method.GET,
@@ -80,7 +93,7 @@ def request(url: str,
             new_location = response_obj.headers.get("Location")
             logger.debug(f'Being redirected to: {new_location}')
             return spawn(request,
-                         new_location,
+                         url=new_location,
                          method=method,
                          headers=headers,
                          body=body,
