@@ -16,7 +16,7 @@ def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
         address = s[1]
     else:
         address = url
-    
+
     port = 80 if proto == Protocol.HTTP else 443
 
     if not address:
@@ -24,10 +24,10 @@ def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
 
     if '/' not in address:
         if ':' in address:
-            address, port = address.split(':', maxsplit=1)
-            if not all([address, port]):
+            address, port_str = address.split(':', maxsplit=1)
+            if not all([address, port_str]):
                 raise InvalidURL(url)
-            port = int(port)
+            port = int(port_str)
         return proto, address, '/', port
 
     host, path = address.split('/', maxsplit=1)
@@ -35,9 +35,9 @@ def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
         raise InvalidURL(url)
 
     if ':' in host:
-        host, port = host.split(':', maxsplit=1)
-        if not all([host, port]):
+        host, port_str = host.split(':', maxsplit=1)
+        if not all([host, port_str]):
             raise InvalidURL(url)
-        port = int(port)
-        
+        port = int(port_str)
+
     return proto, host, '/'+path, port

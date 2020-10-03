@@ -1,10 +1,13 @@
+from typing import Union, Dict
+
+
 class Headers:
     __slots__ = ('_headers')
-    
+
     @property
     def headers(self):
         return self._headers
-    
+
     @headers.setter
     def headers(self, value):
         self._headers = value
@@ -13,19 +16,24 @@ class Headers:
     def from_bytes(cls, b: bytes):
         if b'\r\n\r\n' in b:
             b = b[:b.find(b'\r\n\r\n')]
-        
-        headers = dict()
+
+        headers: Dict[str, Union[str, int]] = dict()
         for line in b.split(b'\r\n'):
             if b':' in line:
                 header, *value = line.split(b':', maxsplit=1)
                 if not value:
                     continue
-                header, value = header.decode().strip(), value[0].decode().strip()
-                if value.isdigit():
-                    value = int(value)
-                headers[header] = value
+
+                header_str, value_str = \
+                    header.decode().strip(), value[0].decode().strip()
+
+                if value_str.isdigit():
+                    value_int = int(value_str)
+                    headers[header_str] = value_int
+                else:
+                    headers[header_str] = value_str
         return Headers(headers)
-    
+
     def to_str(self):
         s = '\r\n'.join(
             [

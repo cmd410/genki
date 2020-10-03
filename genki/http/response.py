@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, Union
+from contextlib import suppress
 
 from .headers import Headers
 from .constants import Code
@@ -7,7 +8,7 @@ from .constants import Code
 class Response:
 
     __slots__ = (
-        'source',
+        'url',
         'http_version',
         'status_code',
         'headers',
@@ -15,13 +16,13 @@ class Response:
     )
 
     def __init__(self,
-                 source: str,
+                 url: str,
                  status_line: str,
                  headers: Headers,
-                 body: bytes):
+                 body: Union[bytes, bytearray]):
         self.http_version, status_code_str, *_ = status_line.split()
         self.status_code = Code(int(status_code_str))
-        self.source = source
+        self.url = url
         self.headers = headers
         self._body = body
 
@@ -29,15 +30,28 @@ class Response:
         return f'{self.__class__.__name__}({self.status_code})'
 
     @property
-    def body(self) -> bytes:
-        charset = self.charset
-        if charset:
-            return self._body.decode(charset)
+    def raw_body(self) -> bytes:
+        """Returns raw bytes of HTTP body as recieved from server
+        """
         return self._body
 
     @property
-    def content_type(self) -> Optional[str]:
-        return self.headers.get('Content-Type')
+    def body(self) -> Union[bytes, str]:
+        """Retruns HTTP body, decoded when possibe
+        """
+        if self.content_type.startswith('text/'):
+            charset = self.charset
+
+            with suppress(ValueError):
+                if charset:
+                    return self._body.decode(charset)
+                else:
+                    return self._body.decode('utf-8')
+        return self._body
+
+    @property
+    def content_type(self) -> str:
+        return self.headers.get('Content-Type', '')
 
     @property
     def is_html(self) -> bool:

@@ -9,7 +9,7 @@ from .http import spawn_request, Headers, Method
 logger = getLogger('genki')
 
 
-def prepare_data(data) -> Optional[Tuple[Union[str, bytes], bool]]:
+def prepare_data(data) -> Tuple[Optional[Union[str, bytes]], bool]:
     """Jsonify data when possible
 
     returns new_data and boolean result of successfull encoding

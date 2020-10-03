@@ -38,14 +38,17 @@ class Client:
             for i in self._requests
             if not i.is_done
         ])
+        self._requests.clear()
 
     def get(self,
             url,
             data=None,
-            params=None,
+            params: dict = None,
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
+        """Perform GET request
+        """
         timeout = timeout or self.timeout
         req = get(
             url=url,
@@ -59,10 +62,12 @@ class Client:
     def post(self,
              url,
              data=None,
-             params=None,
+             params: dict = None,
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
+        """Perform POST request
+        """
         timeout = timeout or self.timeout
 
         req = post(
@@ -77,10 +82,12 @@ class Client:
     def patch(self,
               url,
               data=None,
-              params=None,
+              params: dict = None,
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
+        """Perform PATCH request
+        """
         timeout = timeout or self.timeout
 
         req = patch(
@@ -95,10 +102,12 @@ class Client:
     def put(self,
             url,
             data=None,
-            params=None,
+            params: dict = None,
             headers: Headers = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
+        """Perform PUT request
+        """
         timeout = timeout or self.timeout
 
         req = put(
@@ -113,10 +122,12 @@ class Client:
     def delete(self,
                url,
                data=None,
-               params=None,
+               params: dict = None,
                headers: Headers = Headers(),
                timeout: Optional[float] = None
                ) -> AsyncRequest:
+        """Perform DELETE request
+        """
         timeout = timeout or self.timeout
 
         req = delete(
@@ -131,10 +142,12 @@ class Client:
     def options(self,
                 url,
                 data=None,
-                params=None,
+                params: dict = None,
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
+        """Perform OPTIONS request
+        """
         timeout = timeout or self.timeout
 
         req = options(
@@ -149,10 +162,12 @@ class Client:
     def head(self,
              url,
              data=None,
-             params=None,
+             params: dict = None,
              headers: Headers = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
+        """Perform HEAD request
+        """
         timeout = timeout or self.timeout
 
         req = head(
@@ -167,10 +182,12 @@ class Client:
     def trace(self,
               url,
               data=None,
-              params=None,
+              params: dict = None,
               headers: Headers = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
+        """Perform TRACE request
+        """
         timeout = timeout or self.timeout
 
         req = trace(
@@ -185,10 +202,12 @@ class Client:
     def connect(self,
                 url,
                 data=None,
-                params=None,
+                params: dict = None,
                 headers: Headers = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
+        """Perform CONNECT request
+        """
         timeout = timeout or self.timeout
 
         req = connect(
