@@ -9,8 +9,8 @@ class Headers:
         return self._headers
 
     @headers.setter
-    def headers(self, value):
-        self._headers = value
+    def headers(self, value: dict):
+        self._headers: dict = value
 
     @classmethod
     def from_bytes(cls, b: bytes):
@@ -43,7 +43,7 @@ class Headers:
         )
         s += '\r\n\r\n'
         return s
-    
+
     def to_bytes(self):
         return self.to_str().encode()
 
@@ -54,21 +54,23 @@ class Headers:
         if key not in self.headers.keys():
             self.headers[key] = value
 
+    def remove_header(self, key: str):
+        self._headers.pop(key)
+
     def __bool__(self):
         return bool(self.headers)
 
     def __repr__(self):
-        return f'Headers({self.headers})'
+        return f'{self.__class__.__name__}({self.headers})'
 
-    def __init__(self, headers: dict=dict()):
+    def __init__(self, headers: dict = dict()):
         self.headers = headers
-    
+
     def __getitem__(self, key):
         return self.headers[key]
-    
+
     def __setitem__(self, key, value):
         self.headers[key] = value
-    
+
     def __contains__(self, item):
         return item in self.headers.keys()
-
