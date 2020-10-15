@@ -101,7 +101,7 @@ class RequestPreparations(TestCase):
                 req = RequestBuilder(url)
                 req.set_header('Connection', 'close')
                 req.append_body('Hello world!')
-                
+
                 req_body = s.format(host=hosts[0], path=path)
                 self.assertEqual(req.to_bytes(), (
                     ''.join(
