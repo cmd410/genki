@@ -1,7 +1,7 @@
-from enum import IntFlag
+from enum import IntEnum
 
 
-class Code(IntEnum):
+class StatusCode(IntEnum):
     REQUEST_CANCELLED = 0
 
     CONTINUE = 100
