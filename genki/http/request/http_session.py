@@ -1,7 +1,6 @@
 from typing import Optional, Union
 
 from gevent import socket, ssl
-from gevent.util import wrap_errors
 
 from .request_builder import RequestBuilder
 from ..constants import Protocol
@@ -12,7 +11,8 @@ from ..exceptions import network_exceptions
 class HTTPSession:
     """Class responsible for connecting to servers and transmitting data
 
-    request - Request builder object that will supply information for request.\n
+    request - Request builder object that
+    will supply information for request.\n
     timeout - seconds till socket.timeout.\n
     chunk_size - how many bytes to read at a time.\n
     """

@@ -69,7 +69,9 @@ class RequestBuilder:
         elif isinstance(value, bytes):
             self._headers = Headers.from_bytes(value)
         else:
-            raise TypeError(f'Unsuitable type for Request headers: {type(value)}')
+            raise TypeError(
+                f'Unsuitable type for Request headers: {type(value)}'
+            )
 
     @property
     def method(self) -> Method:
@@ -84,7 +86,9 @@ class RequestBuilder:
         return self._body
 
     @body.setter
-    def body(self, value: Union[str, bytes, bytearray, None], str_encoding='utf-8'):
+    def body(self,
+             value: Union[str, bytes, bytearray, None],
+             str_encoding='utf-8'):
         if not value:
             self._body = b''
         elif isinstance(value, bytes):
