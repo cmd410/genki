@@ -3,8 +3,10 @@ from json import dumps
 from logging import getLogger
 from functools import wraps
 
+from gevent import spawn
+
 from .async_request import AsyncRequest
-from .http import spawn_request, Headers, Method
+from .http import Headers, Method, HTTPSession, RequestBuilder
 
 logger = getLogger('genki')
 
@@ -50,15 +52,19 @@ def request_method(method: Method):
                     'Content-Type',
                     'application/json; charset=UTF-8'
                 )
-            req = AsyncRequest(
-                spawn_request(
+
+            session = HTTPSession(
+                RequestBuilder(
                     url=url,
+                    headers=headers,
                     body=data,
-                    method=method,
-                    timeout=timeout
-                )
+                    method=method
+                ),
+                timeout=timeout
             )
-            return req
+            return AsyncRequest(
+                spawn(session.perform)
+                )
         return wrapper
     return decorator
 

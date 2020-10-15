@@ -1,24 +1,7 @@
-from enum import Enum, IntEnum
+from enum import IntEnum
 
 
-class Protocol(str, Enum):
-    HTTPS = 'https'
-    HTTP = 'http'
-
-
-class Method(str, Enum):
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    DELETE = 'DELETE'
-    CONNECT = 'CONNECT'
-    TRACE = 'TRACE'
-    PATCH = 'PATCH'
-    OPTIONS = 'OPTIONS'
-    HEAD = 'HEAD'
-
-
-class Code(IntEnum):
+class StatusCode(IntEnum):
     REQUEST_CANCELLED = 0
 
     CONTINUE = 100

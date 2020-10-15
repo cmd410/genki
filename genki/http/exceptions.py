@@ -1,1 +1,14 @@
-class InvalidURL(Exception): pass
+from gevent import socket
+
+network_exceptions = (
+    socket.timeout,
+    socket.gaierror,
+    ConnectionRefusedError,
+    ConnectionError,
+    ConnectionAbortedError,
+    ConnectionResetError
+)
+
+
+class InvalidURL(Exception):
+    pass

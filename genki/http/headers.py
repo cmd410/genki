@@ -1,4 +1,5 @@
-from typing import Union, Dict
+from collections import OrderedDict
+from typing import Union, Mapping
 
 
 class Headers:
@@ -9,15 +10,15 @@ class Headers:
         return self._headers
 
     @headers.setter
-    def headers(self, value):
-        self._headers = value
+    def headers(self, value: Mapping[str, Union[str, int]]):
+        self._headers: OrderedDict = OrderedDict(**value)
 
     @classmethod
     def from_bytes(cls, b: bytes):
         if b'\r\n\r\n' in b:
             b = b[:b.find(b'\r\n\r\n')]
 
-        headers: Dict[str, Union[str, int]] = dict()
+        headers: Mapping[str, Union[str, int]] = OrderedDict()
         for line in b.split(b'\r\n'):
             if b':' in line:
                 header, *value = line.split(b':', maxsplit=1)
@@ -27,7 +28,12 @@ class Headers:
                 header_str, value_str = \
                     header.decode().strip(), value[0].decode().strip()
 
-                if value_str.isdigit():
+                if header_str in headers.keys():
+                    # Multiple message-header fields
+                    # Accoring to RFC 2616
+                    headers[header_str] = \
+                        str(headers[header_str]) + ',' + value_str
+                elif value_str.isdigit():
                     value_int = int(value_str)
                     headers[header_str] = value_int
                 else:
@@ -43,7 +49,7 @@ class Headers:
         )
         s += '\r\n\r\n'
         return s
-    
+
     def to_bytes(self):
         return self.to_str().encode()
 
@@ -54,21 +60,23 @@ class Headers:
         if key not in self.headers.keys():
             self.headers[key] = value
 
+    def remove_header(self, key: str):
+        self._headers.pop(key)
+
     def __bool__(self):
         return bool(self.headers)
 
     def __repr__(self):
-        return f'Headers({self.headers})'
+        return f'{self.__class__.__name__}({self.headers})'
 
-    def __init__(self, headers: dict=dict()):
+    def __init__(self, headers: dict = dict()):
         self.headers = headers
-    
+
     def __getitem__(self, key):
         return self.headers[key]
-    
+
     def __setitem__(self, key, value):
         self.headers[key] = value
-    
+
     def __contains__(self, item):
         return item in self.headers.keys()
-

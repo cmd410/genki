@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from .constants import Protocol
-from .exceptions import InvalidURL
+from ..constants import Protocol
+from ..exceptions import InvalidURL
 
 
 def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
@@ -40,4 +40,4 @@ def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
             raise InvalidURL(url)
         port = int(port_str)
 
-    return proto, host, '/'+path, port
+    return proto, host, '/' + path, port
