@@ -1,21 +1,4 @@
-from enum import Enum, IntEnum
-
-
-class Protocol(str, Enum):
-    HTTPS = 'https'
-    HTTP = 'http'
-
-
-class Method(str, Enum):
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    DELETE = 'DELETE'
-    CONNECT = 'CONNECT'
-    TRACE = 'TRACE'
-    PATCH = 'PATCH'
-    OPTIONS = 'OPTIONS'
-    HEAD = 'HEAD'
+from enum import IntFlag
 
 
 class Code(IntEnum):
