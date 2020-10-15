@@ -88,10 +88,11 @@ class HTTPSession:
         if self.conn is not None:
             self.conn.close()
             self.conn = None
-
         return self
 
     def perform(self) -> Union[Response, Exception]:
+        """Perfrom HTTP request
+        """
         try:
             self._init_session()
 

@@ -99,5 +99,17 @@ class RequestPreparations(TestCase):
             url = host + path
             with self.subTest(url=url):
                 req = RequestBuilder(url)
+                req.set_header('Connection', 'close')
+                req.append_body('Hello world!')
+                
                 req_body = s.format(host=hosts[0], path=path)
-                self.assertEqual(req.to_bytes(), (req_body + '\r\n').encode())
+                self.assertEqual(req.to_bytes(), (
+                    ''.join(
+                        [
+                            req_body,
+                            'Connection: close\r\n',
+                            f'Content-Length: {len(req.body)}',
+                            '\r\n\r\n',
+                            'Hello world!'
+                        ]
+                    ).encode()))

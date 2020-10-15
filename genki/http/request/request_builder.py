@@ -84,8 +84,10 @@ class RequestBuilder:
         return self._body
 
     @body.setter
-    def body(self, value: Union[AnyStr, bytearray], str_encoding='utf-8'):
-        if isinstance(value, bytes):
+    def body(self, value: Union[AnyStr, bytearray, None], str_encoding='utf-8'):
+        if not value:
+            self._body = b''
+        elif isinstance(value, bytes):
             self._body = value
         elif isinstance(value, bytearray):
             self._body = bytes(value)
@@ -93,6 +95,17 @@ class RequestBuilder:
             self._body = value.encode(str_encoding)
         else:
             raise TypeError(f'Unsuitable type for body: {type(value)}')
+
+        if self.body:
+            self.headers.set_if_none('Content-Length', len(self.body))
+        elif self.headers.get('Content-Length') is not None:
+            self.headers.remove_header('Content-Length')
+
+    def append_body(self, b: Union[AnyStr, bytearray], encoding='utf-8'):
+        if b:
+            if isinstance(b, str):
+                b = b.encode(encoding)
+            self.body = self.body + b
 
     def set_header(self, key: str, value: Union[str, int]) -> 'RequestBuilder':
         self.headers[key] = value
@@ -106,5 +119,9 @@ class RequestBuilder:
         s: bytes = f'{self.method} {self.path} HTTP/{self.http_version}\r\n'\
             .encode('ascii')
         s += self.headers.to_bytes()
-        s += self.body
+        if self.body:
+            s += self.body
         return s
+
+    def to_str(self) -> str:
+        return self.to_bytes().decode('utf-8', errors='replace')
