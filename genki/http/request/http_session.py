@@ -17,6 +17,14 @@ class HTTPSession:
     chunk_size - how many bytes to read at a time.\n
     """
 
+    __slots__ = (
+        'request',
+        'timeout',
+        'chunk_size',
+        'conn',
+        'responce'
+    )
+
     def __init__(self,
                  request: RequestBuilder,
                  timeout: Optional[float] = 5,
