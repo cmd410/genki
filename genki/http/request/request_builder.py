@@ -1,4 +1,4 @@
-from typing import Union, Mapping, AnyStr
+from typing import Union, Mapping, str, bytes
 
 from ..constants import Method
 from .util import parse_url
@@ -24,7 +24,7 @@ class RequestBuilder:
                      Headers,
                      Mapping[str, Union[str, int]]
                     ] = Headers(),
-                 body: Union[AnyStr, bytearray] = b'',
+                 body: Union[str, bytes, bytearray] = b'',
                  method: Union[Method, str] = Method.GET,
                  http_version: str = '1.1'):
         self.headers = headers
@@ -84,7 +84,7 @@ class RequestBuilder:
         return self._body
 
     @body.setter
-    def body(self, value: Union[AnyStr, bytearray, None], str_encoding='utf-8'):
+    def body(self, value: Union[str, bytes, bytearray, None], str_encoding='utf-8'):
         if not value:
             self._body = b''
         elif isinstance(value, bytes):
@@ -101,7 +101,7 @@ class RequestBuilder:
         elif self.headers.get('Content-Length') is not None:
             self.headers.remove_header('Content-Length')
 
-    def append_body(self, b: Union[AnyStr, bytearray], encoding='utf-8'):
+    def append_body(self, b: Union[str, bytes, bytearray], encoding='utf-8'):
         if b:
             if isinstance(b, str):
                 b = b.encode(encoding)
