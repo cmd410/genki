@@ -1,4 +1,4 @@
-from typing import Union, Mapping, str, bytes
+from typing import Union, Mapping
 
 from ..constants import Method
 from .util import parse_url
