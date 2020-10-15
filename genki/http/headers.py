@@ -27,7 +27,12 @@ class Headers:
                 header_str, value_str = \
                     header.decode().strip(), value[0].decode().strip()
 
-                if value_str.isdigit():
+                if header_str in headers.keys():
+                    # Multiple message-header fields
+                    # Accoring to RFC 2616
+                    headers[header_str] = \
+                        str(headers[header_str]) + ',' + value_str
+                elif value_str.isdigit():
                     value_int = int(value_str)
                     headers[header_str] = value_int
                 else:
