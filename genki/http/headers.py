@@ -1,4 +1,5 @@
-from typing import Union, Dict
+from collections import OrderedDict
+from typing import Union, Mapping
 
 
 class Headers:
@@ -9,15 +10,15 @@ class Headers:
         return self._headers
 
     @headers.setter
-    def headers(self, value: dict):
-        self._headers: dict = value
+    def headers(self, value: Mapping[str, Union[str, int]]):
+        self._headers: OrderedDict = OrderedDict(**value)
 
     @classmethod
     def from_bytes(cls, b: bytes):
         if b'\r\n\r\n' in b:
             b = b[:b.find(b'\r\n\r\n')]
 
-        headers: Dict[str, Union[str, int]] = dict()
+        headers: Mapping[str, Union[str, int]] = OrderedDict()
         for line in b.split(b'\r\n'):
             if b':' in line:
                 header, *value = line.split(b':', maxsplit=1)
