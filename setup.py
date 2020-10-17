@@ -24,7 +24,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     install_requires=requires,
     url='https://github.com/cmd410/genki',
-    packages=['genki', 'genki.http', 'genki.http.request'],
+    packages=['genki', 'genki.http', 'genki.http.request', 'genki.http.constants'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
