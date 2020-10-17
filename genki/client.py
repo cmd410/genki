@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Union, Mapping
 
 from gevent import joinall
 
@@ -44,7 +44,7 @@ class Client:
             url,
             data=None,
             params: dict = None,
-            headers: Headers = Headers(),
+            headers: Union[Headers, Mapping] = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
         """Perform GET request
@@ -63,7 +63,7 @@ class Client:
              url,
              data=None,
              params: dict = None,
-             headers: Headers = Headers(),
+             headers: Union[Headers, Mapping] = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
         """Perform POST request
@@ -83,7 +83,7 @@ class Client:
               url,
               data=None,
               params: dict = None,
-              headers: Headers = Headers(),
+              headers: Union[Headers, Mapping] = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
         """Perform PATCH request
@@ -103,7 +103,7 @@ class Client:
             url,
             data=None,
             params: dict = None,
-            headers: Headers = Headers(),
+            headers: Union[Headers, Mapping] = Headers(),
             timeout: Optional[float] = None
             ) -> AsyncRequest:
         """Perform PUT request
@@ -123,7 +123,7 @@ class Client:
                url,
                data=None,
                params: dict = None,
-               headers: Headers = Headers(),
+               headers: Union[Headers, Mapping] = Headers(),
                timeout: Optional[float] = None
                ) -> AsyncRequest:
         """Perform DELETE request
@@ -143,7 +143,7 @@ class Client:
                 url,
                 data=None,
                 params: dict = None,
-                headers: Headers = Headers(),
+                headers: Union[Headers, Mapping] = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
         """Perform OPTIONS request
@@ -163,7 +163,7 @@ class Client:
              url,
              data=None,
              params: dict = None,
-             headers: Headers = Headers(),
+             headers: Union[Headers, Mapping] = Headers(),
              timeout: Optional[float] = None
              ) -> AsyncRequest:
         """Perform HEAD request
@@ -183,7 +183,7 @@ class Client:
               url,
               data=None,
               params: dict = None,
-              headers: Headers = Headers(),
+              headers: Union[Headers, Mapping] = Headers(),
               timeout: Optional[float] = None
               ) -> AsyncRequest:
         """Perform TRACE request
@@ -203,7 +203,7 @@ class Client:
                 url,
                 data=None,
                 params: dict = None,
-                headers: Headers = Headers(),
+                headers: Union[Headers, Mapping] = Headers(),
                 timeout: Optional[float] = None
                 ) -> AsyncRequest:
         """Perform CONNECT request

@@ -1,4 +1,4 @@
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, Mapping
 from json import dumps
 from logging import getLogger
 from functools import wraps
@@ -41,25 +41,26 @@ def request_method(method: Method):
         def wrapper(url,
                     data=None,
                     params=None,
-                    headers: Headers = Headers(),
+                    headers: Union[Headers, Mapping] = Headers(),
                     timeout: Optional[float] = None):
             """A generic http request function reused for every method
             """
-
             data, is_json = prepare_data(data)
+
+            builder = RequestBuilder(
+                        url=url,
+                        headers=headers,
+                        body=data,
+                        method=method)
+
             if is_json:
-                headers.set_if_none(
+                builder.headers.set_if_none(
                     'Content-Type',
                     'application/json; charset=UTF-8'
                 )
 
             session = HTTPSession(
-                RequestBuilder(
-                    url=url,
-                    headers=headers,
-                    body=data,
-                    method=method
-                ),
+                builder,
                 timeout=timeout
             )
             return AsyncRequest(
@@ -73,7 +74,7 @@ def request_method(method: Method):
 def get(url,
         data=None,
         params=None,
-        headers: Headers = Headers(),
+        headers: Union[Headers, Mapping] = Headers(),
         timeout: Optional[float] = None
         ) -> AsyncRequest:
     pass
@@ -83,7 +84,7 @@ def get(url,
 def post(url,
          data=None,
          params=None,
-         headers: Headers = Headers(),
+         headers: Union[Headers, Mapping] = Headers(),
          timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -92,7 +93,7 @@ def post(url,
 def patch(url,
           data=None,
           params=None,
-          headers: Headers = Headers(),
+          headers: Union[Headers, Mapping] = Headers(),
           timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -101,7 +102,7 @@ def patch(url,
 def put(url,
         data=None,
         params=None,
-        headers: Headers = Headers(),
+        headers: Union[Headers, Mapping] = Headers(),
         timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -110,7 +111,7 @@ def put(url,
 def delete(url,
            data=None,
            params=None,
-           headers: Headers = Headers(),
+           headers: Union[Headers, Mapping] = Headers(),
            timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -119,7 +120,7 @@ def delete(url,
 def connect(url,
             data=None,
             params=None,
-            headers: Headers = Headers(),
+            headers: Union[Headers, Mapping] = Headers(),
             timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -128,7 +129,7 @@ def connect(url,
 def options(url,
             data=None,
             params=None,
-            headers: Headers = Headers(),
+            headers: Union[Headers, Mapping] = Headers(),
             timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -137,7 +138,7 @@ def options(url,
 def trace(url,
           data=None,
           params=None,
-          headers: Headers = Headers(),
+          headers: Union[Headers, Mapping] = Headers(),
           timeout: Optional[float] = None) -> AsyncRequest:
     pass
 
@@ -146,6 +147,6 @@ def trace(url,
 def head(url,
          data=None,
          params=None,
-         headers: Headers = Headers(),
+         headers: Union[Headers, Mapping] = Headers(),
          timeout: Optional[float] = None) -> AsyncRequest:
     pass
