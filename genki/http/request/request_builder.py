@@ -101,7 +101,7 @@ class RequestBuilder:
             raise TypeError(f'Unsuitable type for body: {type(value)}')
 
         if self.body:
-            self.headers.set_if_none('Content-Length', len(self.body))
+            self.headers['Content-Length'] = len(self.body)
         elif self.headers.get('Content-Length') is not None:
             self.headers.remove_header('Content-Length')
 

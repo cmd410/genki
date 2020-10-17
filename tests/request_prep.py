@@ -113,3 +113,4 @@ class RequestPreparations(TestCase):
                             'Hello world!'
                         ]
                     ).encode()))
+                self.assertEqual(req.headers['Content-Length'], len('Hello world!'))
