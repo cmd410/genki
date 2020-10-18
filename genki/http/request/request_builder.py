@@ -14,7 +14,6 @@ redirect = namedtuple(
 
 class RequestBuilder:
     __slots__ = (
-        '_url',
         '_headers',
         '_method',
         '_body',
@@ -102,7 +101,6 @@ class RequestBuilder:
             raise TypeError(
                 f'Unsuitable type for Request headers: {type(value)}'
             )
-        self._headers.set_if_none('Connection', 'close')
 
     @property
     def method(self) -> Method:
@@ -162,6 +160,7 @@ class RequestBuilder:
     def to_bytes(self) -> bytes:
         s: bytes = f'{self.method} {self.path} HTTP/{self.http_version}\r\n'\
             .encode('ascii')
+        self._headers.set_if_none('Connection', 'close')
         s += self.headers.to_bytes()
         if self.body:
             s += self.body
