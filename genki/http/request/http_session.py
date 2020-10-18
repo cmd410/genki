@@ -106,9 +106,9 @@ class HTTPSession:
 
             self._send_data()
             self._read_response()
-
-            self._end_session()
         except network_exceptions as err:
             return err
+        finally:
+            self._end_session()
 
         return self.responce
