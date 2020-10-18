@@ -57,7 +57,7 @@ class RequestBuilder:
 
         url += self.host
         if self.port not in {80, 443}:
-            url += str(self.port)
+            url += f':{self.port}'
 
         url += self.path
         if self.query:
