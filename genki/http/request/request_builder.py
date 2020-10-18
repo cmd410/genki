@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union, Dict, Any
 
 from ..constants import Method
 from .util import parse_url
@@ -12,6 +12,8 @@ class RequestBuilder:
         '_method',
         '_body',
         '_host',
+        'username',
+        'password',
         'protocol',
         'path',
         'port',
@@ -20,6 +22,7 @@ class RequestBuilder:
 
     def __init__(self,
                  url: str,
+                 params: Dict[str, Any] = dict(),
                  headers: Union[
                      Headers,
                      Dict[str, Union[str, int]],
@@ -39,10 +42,14 @@ class RequestBuilder:
 
     @url.setter
     def url(self, value: str):
-        self.protocol,\
-            self.host,\
-            self.path,\
-            self.port = parse_url(value)
+        parse_result = parse_url(value)
+
+        self.protocol = parse_result.protocol
+        self.host = parse_result.host
+        self.path = parse_result.path
+        self.port = parse_result.port
+        self.username = parse_result.username
+        self.password = parse_result.password
 
         self._url = value
 
