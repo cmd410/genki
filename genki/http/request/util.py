@@ -1,5 +1,4 @@
 from collections import namedtuple
-from typing import Tuple
 
 from ..constants import Protocol
 from ..exceptions import InvalidURL
