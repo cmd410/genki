@@ -1,7 +1,11 @@
+from collections import namedtuple
 from typing import Tuple
 
 from ..constants import Protocol
 from ..exceptions import InvalidURL
+
+
+url_parse_result = namedtuple('URLParseResult', ['protocol', 'host', 'path', 'port'])
 
 
 def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
@@ -40,4 +44,4 @@ def parse_url(url: str) -> Tuple[Protocol, str, str, int]:
             raise InvalidURL(url)
         port = int(port_str)
 
-    return proto, host, '/' + path, port
+    return url_parse_result(proto, host, '/' + path, port)
