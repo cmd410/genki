@@ -41,7 +41,10 @@ class HTTPSession:
         """Establish TCP connection to server
         """
         host, port = self.request.host, self.request.port
-        self.conn = socket.create_connection((host, port))
+        self.conn = socket.create_connection(
+            (host, port),
+            timeout=self.timeout
+            )
 
         if self.request.protocol == Protocol.HTTPS:
             self.conn = ssl.wrap_socket(self.conn)
