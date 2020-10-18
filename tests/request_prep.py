@@ -1,65 +1,72 @@
 from unittest import TestCase
 from itertools import product
 
+from genki.http.request.util import parse_url, url_parse_result
 from genki.http.request import RequestBuilder
 from genki.http.constants import Protocol
 from genki.http.exceptions import InvalidURL
+
+
+def generate_url():
+    protos = ('http', 'https', '')
+    domains = (
+        'example.com',
+    )
+    ports = (8080, 6204, '')
+    usernames = ('username', '')
+    passwords = ('password', '')
+    paths = (
+        '/',
+        '/some/path'
+    )
+    queries = ('', '?param=value')
+
+    for proto, user, password, host, port, path, query in \
+            product(protos, usernames, passwords,
+                    domains, ports, paths, queries):
+        url = ''
+        if proto:
+            url = f'{proto}://'
+            if not port:
+                port = 443 if proto == 'https' else 80
+        else:
+            proto = 'http'
+        if user:
+            url += f'{user}'
+            if password:
+                url += f':{password}'
+            url += '@'
+        url += f'{host}'
+        if port:
+            url += f':{port}'
+        url += f'{path}{query}'
+        if not port:
+            port = 443 if proto == 'https' else 80
+        yield url, url_parse_result(
+            Protocol(proto),
+            host,
+            path,
+            port,
+            user,
+            password if user else '',
+            query[1:])
 
 
 class RequestPreparations(TestCase):
     def test_url(self):
         """Check that url parses correctly
         """
-        cases = [
-            (
-                'example.com',
-                (Protocol.HTTP, 'example.com', '/', 80)),
-            (
-                'http://example.com',
-                (Protocol.HTTP, 'example.com', '/', 80)),
-            (
-                'https://example.com',
-                (Protocol.HTTPS, 'example.com', '/', 443)),
-            
-            (
-                'example.com/',
-                (Protocol.HTTP, 'example.com', '/', 80)),
-            (
-                'http://example.com/',
-                (Protocol.HTTP, 'example.com', '/', 80)),
-            (
-                'https://example.com/',
-                (Protocol.HTTPS, 'example.com', '/', 443)),
-
-            (
-                'example.com/some/path',
-                (Protocol.HTTP, 'example.com', '/some/path', 80)),
-            (
-                'http://example.com/some/path',
-                (Protocol.HTTP, 'example.com', '/some/path', 80)),
-            (
-                'https://example.com/some/path',
-                (Protocol.HTTPS, 'example.com', '/some/path', 443)),
-
-            (
-                'example.com:8080/some/path',
-                (Protocol.HTTP, 'example.com', '/some/path', 8080)),
-            (
-                'http://example.com:8080/some/path',
-                (Protocol.HTTP, 'example.com', '/some/path', 8080)),
-            (
-                'https://example.com:8080/some/path',
-                (Protocol.HTTPS, 'example.com', '/some/path', 8080)),
-        ]
+        cases = list(generate_url())
 
         for url, result in cases:
-            protocol, host, path, port = result
             with self.subTest(url=url):
-                req_builder = RequestBuilder(url)
-                self.assertEqual(req_builder.protocol, protocol)
-                self.assertEqual(req_builder.host, host)
-                self.assertEqual(req_builder.path, path)
-                self.assertEqual(req_builder.port, port)
+                r = parse_url(url)
+                if hash(r) != hash(result):
+                    print(url)
+                    print(r)
+                    print(result)
+                    print()
+                self.assertEqual(r, result)
 
     def test_invalid_urls(self):
         """Make sure invalid urls will raise an error
@@ -113,3 +120,4 @@ class RequestPreparations(TestCase):
                             'Hello world!'
                         ]
                     ).encode()))
+                self.assertEqual(req.headers['Content-Length'], len('Hello world!'))

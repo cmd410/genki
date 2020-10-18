@@ -1,4 +1,4 @@
-from typing import Union, Mapping
+from typing import Union, Dict, Any
 
 from ..constants import Method
 from .util import parse_url
@@ -12,6 +12,8 @@ class RequestBuilder:
         '_method',
         '_body',
         '_host',
+        'username',
+        'password',
         'protocol',
         'path',
         'port',
@@ -20,10 +22,11 @@ class RequestBuilder:
 
     def __init__(self,
                  url: str,
+                 params: Dict[str, Any] = dict(),
                  headers: Union[
                      Headers,
-                     Mapping[str, Union[str, int]]
-                    ] = Headers(),
+                     Dict[str, Union[str, int]],
+                     bytes] = Headers(),
                  body: Union[str, bytes, bytearray] = b'',
                  method: Union[Method, str] = Method.GET,
                  http_version: str = '1.1'):
@@ -39,10 +42,14 @@ class RequestBuilder:
 
     @url.setter
     def url(self, value: str):
-        self.protocol,\
-            self.host,\
-            self.path,\
-            self.port = parse_url(value)
+        parse_result = parse_url(value)
+
+        self.protocol = parse_result.protocol
+        self.host = parse_result.host
+        self.path = parse_result.path
+        self.port = parse_result.port
+        self.username = parse_result.username
+        self.password = parse_result.password
 
         self._url = value
 
@@ -61,10 +68,10 @@ class RequestBuilder:
 
     @headers.setter
     def headers(self,
-                value: Union[Headers, Mapping[str, Union[str, int]], bytes]):
+                value: Union[Headers, Dict[str, Union[str, int]], bytes]):
         if isinstance(value, Headers):
             self._headers = value
-        elif isinstance(value, dict):
+        elif isinstance(value, Dict):
             self._headers = Headers(value)
         elif isinstance(value, bytes):
             self._headers = Headers.from_bytes(value)
@@ -101,7 +108,7 @@ class RequestBuilder:
             raise TypeError(f'Unsuitable type for body: {type(value)}')
 
         if self.body:
-            self.headers.set_if_none('Content-Length', len(self.body))
+            self.headers['Content-Length'] = len(self.body)
         elif self.headers.get('Content-Length') is not None:
             self.headers.remove_header('Content-Length')
 
