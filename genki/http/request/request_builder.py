@@ -1,4 +1,4 @@
-from typing import Union, Mapping
+from typing import Union, Dict
 
 from ..constants import Method
 from .util import parse_url
@@ -22,8 +22,8 @@ class RequestBuilder:
                  url: str,
                  headers: Union[
                      Headers,
-                     Mapping[str, Union[str, int]]
-                    ] = Headers(),
+                     Dict[str, Union[str, int]],
+                     bytes] = Headers(),
                  body: Union[str, bytes, bytearray] = b'',
                  method: Union[Method, str] = Method.GET,
                  http_version: str = '1.1'):
@@ -61,10 +61,10 @@ class RequestBuilder:
 
     @headers.setter
     def headers(self,
-                value: Union[Headers, Mapping[str, Union[str, int]], bytes]):
+                value: Union[Headers, Dict[str, Union[str, int]], bytes]):
         if isinstance(value, Headers):
             self._headers = value
-        elif isinstance(value, dict):
+        elif isinstance(value, Dict):
             self._headers = Headers(value)
         elif isinstance(value, bytes):
             self._headers = Headers.from_bytes(value)

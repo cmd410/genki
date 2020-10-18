@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Union, Mapping
+from typing import Union, Mapping, Dict
 
 
 class Headers:
@@ -18,7 +18,7 @@ class Headers:
         if b'\r\n\r\n' in b:
             b = b[:b.find(b'\r\n\r\n')]
 
-        headers: Mapping[str, Union[str, int]] = OrderedDict()
+        headers: Dict[str, Union[str, int]] = OrderedDict()
         for line in b.split(b'\r\n'):
             if b':' in line:
                 header, *value = line.split(b':', maxsplit=1)
