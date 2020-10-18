@@ -79,6 +79,7 @@ class RequestBuilder:
             raise TypeError(
                 f'Unsuitable type for Request headers: {type(value)}'
             )
+        self._headers.set_if_none('Connection', 'close')
 
     @property
     def method(self) -> Method:
