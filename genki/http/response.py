@@ -1,6 +1,9 @@
 from typing import Optional, Union
 from contextlib import suppress
 
+from chardet import detect
+from chardet.universaldetector import UniversalDetector
+
 from .headers import Headers
 from .constants import StatusCode
 from .request import RequestBuilder
@@ -44,12 +47,30 @@ class Response:
         """
         if self.content_type.startswith('text/'):
             charset = self.charset
-
-            with suppress(ValueError):
-                if charset:
-                    return self._body.decode(charset)
+            if charset is not None:
+                with suppress(ValueError):
+                    if charset:
+                        return self._body.decode(charset)
+                    else:
+                        return self._body.decode('utf-8')
+            else:
+                # detect small content
+                if len(self._body) < 1024 * 10:
+                    chardet_result = detect(self._body)
+                    if round(chardet_result['confidence']):
+                        return self._body.decode(chardet_result['encoding'])
                 else:
-                    return self._body.decode('utf-8')
+                    # detect large content
+                    detector = UniversalDetector()
+                    for i in range(0, len(self._body), 1024):
+                        print(i)
+                        detector.feed(self._body[i:i+1024])
+                        if detector.done:
+                            break
+
+                    chardet_result = detector.close()
+                    if round(chardet_result['confidence']):
+                        return self._body.decode(chardet_result['encoding'])
         return self._body
 
     @property

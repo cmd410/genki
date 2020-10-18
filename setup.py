@@ -12,6 +12,7 @@ requires = [
     'pycparser==2.20',
     'zope.event==4.5.0',
     'zope.interface==5.1.2',
+    'chardet==3.0.4'
 ]
 
 setuptools.setup(
