@@ -1,8 +1,15 @@
 from typing import Union, Dict, Any
+from collections import namedtuple
 
-from ..constants import Method
+from ..constants import Method, StatusCode
 from .util import parse_url
 from ..headers import Headers
+
+
+redirect = namedtuple(
+    'Redirect',
+    ['source', 'destination', 'status_code']
+    )
 
 
 class RequestBuilder:
@@ -18,6 +25,8 @@ class RequestBuilder:
         'path',
         'port',
         'http_version',
+        'query',
+        'redirect_chain'
     )
 
     def __init__(self,
@@ -35,10 +44,25 @@ class RequestBuilder:
         self.body = body
         self.method = method
         self.http_version = http_version
+        self.redirect_chain = []
 
     @property
     def url(self) -> str:
-        return self._url
+        url = f'{self.protocol}://'
+        if self.username:
+            url += f'{self.username}'
+            if self.password:
+                url += f':{self.password}'
+            url += '@'
+
+        url += self.host
+        if self.port not in {80, 443}:
+            url += str(self.port)
+
+        url += self.path
+        if self.query:
+            url += f'?{self.query}'
+        return url
 
     @url.setter
     def url(self, value: str):
@@ -48,10 +72,9 @@ class RequestBuilder:
         self.host = parse_result.host
         self.path = parse_result.path
         self.port = parse_result.port
+        self.query = parse_result.query
         self.username = parse_result.username
         self.password = parse_result.password
-
-        self._url = value
 
     @property
     def host(self) -> str:
@@ -112,6 +135,15 @@ class RequestBuilder:
             self.headers['Content-Length'] = len(self.body)
         elif self.headers.get('Content-Length') is not None:
             self.headers.remove_header('Content-Length')
+
+    def redirect_to(self, code: StatusCode, location: str):
+        source = self.url
+        if location.startswith('/'):
+            self.path = location
+        else:
+            self.url = location
+        destination = self.url
+        self.redirect_chain.append(redirect(source, destination, code))
 
     def append_body(self, b: Union[str, bytes, bytearray], encoding='utf-8'):
         if b:

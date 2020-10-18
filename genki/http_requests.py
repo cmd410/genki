@@ -42,7 +42,8 @@ def request_method(method: Method):
                     data=None,
                     params=None,
                     headers: Union[Headers, Mapping] = Headers(),
-                    timeout: Optional[float] = None):
+                    timeout: Optional[float] = None,
+                    follow_redirects: bool = True):
             """A generic http request function reused for every method
             """
             data, is_json = prepare_data(data)
