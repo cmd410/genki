@@ -123,9 +123,10 @@ class HTTPSession:
 
         if 300 < self.responce.status_code < 400 \
                 and self.follow_redirects:
-            if len(self.request.redirect_chain) >= self.redirects_limit:
-                return self.responce
-            
+            if self.redirects_limit:
+                if len(self.request.redirect_chain) >= self.redirects_limit:
+                    return self.responce
+
             self.request.redirect_to(
                 self.responce.status_code,
                 self.responce.headers['Location']
