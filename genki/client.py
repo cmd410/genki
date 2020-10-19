@@ -45,7 +45,9 @@ class Client:
             data=None,
             params: dict = None,
             headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None
+            timeout: Optional[float] = None,
+            follow_redirects: bool = True,
+            redirects_limit: int = 5
             ) -> AsyncRequest:
         """Perform GET request
         """
@@ -55,7 +57,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -64,7 +68,9 @@ class Client:
              data=None,
              params: dict = None,
              headers: Union[Headers, Mapping] = Headers(),
-             timeout: Optional[float] = None
+             timeout: Optional[float] = None,
+             follow_redirects: bool = True,
+             redirects_limit: int = 5
              ) -> AsyncRequest:
         """Perform POST request
         """
@@ -75,7 +81,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -84,7 +92,9 @@ class Client:
               data=None,
               params: dict = None,
               headers: Union[Headers, Mapping] = Headers(),
-              timeout: Optional[float] = None
+              timeout: Optional[float] = None,
+              follow_redirects: bool = True,
+              redirects_limit: int = 5
               ) -> AsyncRequest:
         """Perform PATCH request
         """
@@ -95,7 +105,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -104,7 +116,9 @@ class Client:
             data=None,
             params: dict = None,
             headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None
+            timeout: Optional[float] = None,
+            follow_redirects: bool = True,
+            redirects_limit: int = 5
             ) -> AsyncRequest:
         """Perform PUT request
         """
@@ -115,7 +129,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -124,7 +140,9 @@ class Client:
                data=None,
                params: dict = None,
                headers: Union[Headers, Mapping] = Headers(),
-               timeout: Optional[float] = None
+               timeout: Optional[float] = None,
+               follow_redirects: bool = True,
+               redirects_limit: int = 5
                ) -> AsyncRequest:
         """Perform DELETE request
         """
@@ -135,7 +153,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -144,7 +164,9 @@ class Client:
                 data=None,
                 params: dict = None,
                 headers: Union[Headers, Mapping] = Headers(),
-                timeout: Optional[float] = None
+                timeout: Optional[float] = None,
+                follow_redirects: bool = True,
+                redirects_limit: int = 5
                 ) -> AsyncRequest:
         """Perform OPTIONS request
         """
@@ -155,7 +177,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -164,7 +188,9 @@ class Client:
              data=None,
              params: dict = None,
              headers: Union[Headers, Mapping] = Headers(),
-             timeout: Optional[float] = None
+             timeout: Optional[float] = None,
+             follow_redirects: bool = True,
+             redirects_limit: int = 5
              ) -> AsyncRequest:
         """Perform HEAD request
         """
@@ -175,7 +201,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -184,7 +212,9 @@ class Client:
               data=None,
               params: dict = None,
               headers: Union[Headers, Mapping] = Headers(),
-              timeout: Optional[float] = None
+              timeout: Optional[float] = None,
+              follow_redirects: bool = True,
+              redirects_limit: int = 5
               ) -> AsyncRequest:
         """Perform TRACE request
         """
@@ -195,7 +225,9 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
 
@@ -204,7 +236,9 @@ class Client:
                 data=None,
                 params: dict = None,
                 headers: Union[Headers, Mapping] = Headers(),
-                timeout: Optional[float] = None
+                timeout: Optional[float] = None,
+                follow_redirects: bool = True,
+                redirects_limit: int = 5
                 ) -> AsyncRequest:
         """Perform CONNECT request
         """
@@ -215,6 +249,8 @@ class Client:
             data=data,
             params=params,
             headers=headers,
-            timeout=timeout)
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+            redirects_limit=redirects_limit)
         self._requests.append(req)
         return req
