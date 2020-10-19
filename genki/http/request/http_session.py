@@ -24,19 +24,22 @@ class HTTPSession:
         'chunk_size',
         'conn',
         'responce',
-        'follow_redirects'
+        'follow_redirects',
+        'redirects_limit'
     )
 
     def __init__(self,
                  request: RequestBuilder,
                  timeout: Optional[float] = 5,
                  chunk_size: Optional[int] = 1024,
-                 follow_redirects: bool = True
+                 follow_redirects: bool = True,
+                 redirects_limit: int = 5
                  ):
         self.request = request
         self.timeout = timeout
         self.chunk_size = chunk_size
         self.follow_redirects = follow_redirects
+        self.redirects_limit = redirects_limit
 
         self.conn: Optional[socket.socket] = None
         self.responce: Optional[Response] = None
@@ -120,6 +123,9 @@ class HTTPSession:
 
         if 300 < self.responce.status_code < 400 \
                 and self.follow_redirects:
+            if len(self.request.redirect_chain) >= self.redirects_limit:
+                return self.responce
+            
             self.request.redirect_to(
                 self.responce.status_code,
                 self.responce.headers['Location']
