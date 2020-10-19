@@ -14,6 +14,7 @@ redirect = namedtuple(
 
 class RequestBuilder:
     __slots__ = (
+        '_url',
         '_headers',
         '_method',
         '_body',
@@ -47,21 +48,7 @@ class RequestBuilder:
 
     @property
     def url(self) -> str:
-        url = f'{self.protocol}://'
-        if self.username:
-            url += f'{self.username}'
-            if self.password:
-                url += f':{self.password}'
-            url += '@'
-
-        url += self.host
-        if self.port not in {80, 443}:
-            url += f':{self.port}'
-
-        url += self.path
-        if self.query:
-            url += f'?{self.query}'
-        return url
+        return self._url
 
     @url.setter
     def url(self, value: str):
@@ -74,6 +61,24 @@ class RequestBuilder:
         self.query = parse_result.query
         self.username = parse_result.username
         self.password = parse_result.password
+        
+        self.update_url()
+
+    def update_url(self):
+        self._url = f'{self.protocol}://'
+        if self.username:
+            self._url += f'{self.username}'
+            if self.password:
+                self._url += f':{self.password}'
+            self._url += '@'
+
+        self._url += self.host
+        if self.port not in {80, 443}:
+            self._url += f':{self.port}'
+
+        self._url += self.path
+        if self.query:
+            self._url += f'?{self.query}'
 
     @property
     def host(self) -> str:
@@ -138,6 +143,7 @@ class RequestBuilder:
         source = self.url
         if location.startswith('/'):
             self.path = location
+            self.update_url()
         else:
             self.url = location
         destination = self.url
