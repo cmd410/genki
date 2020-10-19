@@ -1,8 +1,15 @@
 from typing import Union, Dict, Any
+from collections import namedtuple
 
-from ..constants import Method
+from ..constants import Method, StatusCode
 from .util import parse_url
 from ..headers import Headers
+
+
+redirect = namedtuple(
+    'Redirect',
+    ['source', 'destination', 'status_code']
+    )
 
 
 class RequestBuilder:
@@ -18,6 +25,8 @@ class RequestBuilder:
         'path',
         'port',
         'http_version',
+        'query',
+        'redirect_chain'
     )
 
     def __init__(self,
@@ -35,6 +44,7 @@ class RequestBuilder:
         self.body = body
         self.method = method
         self.http_version = http_version
+        self.redirect_chain = []
 
     @property
     def url(self) -> str:
@@ -48,10 +58,27 @@ class RequestBuilder:
         self.host = parse_result.host
         self.path = parse_result.path
         self.port = parse_result.port
+        self.query = parse_result.query
         self.username = parse_result.username
         self.password = parse_result.password
+        
+        self.update_url()
 
-        self._url = value
+    def update_url(self):
+        self._url = f'{self.protocol}://'
+        if self.username:
+            self._url += f'{self.username}'
+            if self.password:
+                self._url += f':{self.password}'
+            self._url += '@'
+
+        self._url += self.host
+        if self.port not in {80, 443}:
+            self._url += f':{self.port}'
+
+        self._url += self.path
+        if self.query:
+            self._url += f'?{self.query}'
 
     @property
     def host(self) -> str:
@@ -112,6 +139,16 @@ class RequestBuilder:
         elif self.headers.get('Content-Length') is not None:
             self.headers.remove_header('Content-Length')
 
+    def redirect_to(self, code: StatusCode, location: str):
+        source = self.url
+        if location.startswith('/'):
+            self.path = location
+            self.update_url()
+        else:
+            self.url = location
+        destination = self.url
+        self.redirect_chain.append(redirect(source, destination, code))
+
     def append_body(self, b: Union[str, bytes, bytearray], encoding='utf-8'):
         if b:
             if isinstance(b, str):
@@ -129,6 +166,7 @@ class RequestBuilder:
     def to_bytes(self) -> bytes:
         s: bytes = f'{self.method} {self.path} HTTP/{self.http_version}\r\n'\
             .encode('ascii')
+        self._headers.set_if_none('Connection', 'close')
         s += self.headers.to_bytes()
         if self.body:
             s += self.body

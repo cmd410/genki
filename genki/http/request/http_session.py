@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from gevent import socket, ssl
+from gevent import socket, ssl, spawn
 
 from .request_builder import RequestBuilder
 from ..constants import Protocol
@@ -15,6 +15,7 @@ class HTTPSession:
     will supply information for request.\n
     timeout - seconds till socket.timeout.\n
     chunk_size - how many bytes to read at a time.\n
+    follow_redirects - should redirects be followed
     """
 
     __slots__ = (
@@ -22,17 +23,23 @@ class HTTPSession:
         'timeout',
         'chunk_size',
         'conn',
-        'responce'
+        'responce',
+        'follow_redirects',
+        'redirects_limit'
     )
 
     def __init__(self,
                  request: RequestBuilder,
                  timeout: Optional[float] = 5,
-                 chunk_size: Optional[int] = 1024
+                 chunk_size: Optional[int] = 1024,
+                 follow_redirects: bool = True,
+                 redirects_limit: int = 5
                  ):
         self.request = request
         self.timeout = timeout
         self.chunk_size = chunk_size
+        self.follow_redirects = follow_redirects
+        self.redirects_limit = redirects_limit
 
         self.conn: Optional[socket.socket] = None
         self.responce: Optional[Response] = None
@@ -41,7 +48,10 @@ class HTTPSession:
         """Establish TCP connection to server
         """
         host, port = self.request.host, self.request.port
-        self.conn = socket.create_connection((host, port))
+        self.conn = socket.create_connection(
+            (host, port),
+            timeout=self.timeout
+            )
 
         if self.request.protocol == Protocol.HTTPS:
             self.conn = ssl.wrap_socket(self.conn)
@@ -106,9 +116,20 @@ class HTTPSession:
 
             self._send_data()
             self._read_response()
-
-            self._end_session()
         except network_exceptions as err:
             return err
+        finally:
+            self._end_session()
 
+        if 300 < self.responce.status_code < 400 \
+                and self.follow_redirects:
+            if self.redirects_limit:
+                if len(self.request.redirect_chain) >= self.redirects_limit:
+                    return self.responce
+
+            self.request.redirect_to(
+                self.responce.status_code,
+                self.responce.headers['Location']
+                )
+            return spawn(self.perform).get()
         return self.responce

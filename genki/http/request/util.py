@@ -1,5 +1,4 @@
 from collections import namedtuple
-from typing import Tuple
 
 from ..constants import Protocol
 from ..exceptions import InvalidURL
@@ -42,7 +41,8 @@ def parse_url(url: str) -> url_parse_result:
             password = ''
         else:
             username, password = user_info.split(':')
-
+    if password and not username:
+        raise InvalidURL(url)
     # Parse path
     if '/' not in host:
         path = '/'

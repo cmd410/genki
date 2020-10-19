@@ -42,7 +42,10 @@ def request_method(method: Method):
                     data=None,
                     params=None,
                     headers: Union[Headers, Mapping] = Headers(),
-                    timeout: Optional[float] = None):
+                    timeout: Optional[float] = None,
+                    follow_redirects: bool = True,
+                    redirects_limit: int = 5
+                    ):
             """A generic http request function reused for every method
             """
             data, is_json = prepare_data(data)
@@ -61,7 +64,9 @@ def request_method(method: Method):
 
             session = HTTPSession(
                 builder,
-                timeout=timeout
+                timeout=timeout,
+                follow_redirects=follow_redirects,
+                redirects_limit=redirects_limit
             )
             return AsyncRequest(
                 spawn(session.perform)
@@ -75,7 +80,9 @@ def get(url,
         data=None,
         params=None,
         headers: Union[Headers, Mapping] = Headers(),
-        timeout: Optional[float] = None
+        timeout: Optional[float] = None,
+        follow_redirects: bool = True,
+        redirects_limit: int = 5
         ) -> AsyncRequest:
     pass
 
@@ -85,7 +92,10 @@ def post(url,
          data=None,
          params=None,
          headers: Union[Headers, Mapping] = Headers(),
-         timeout: Optional[float] = None) -> AsyncRequest:
+         timeout: Optional[float] = None,
+         follow_redirects: bool = True,
+         redirects_limit: int = 5
+         ) -> AsyncRequest:
     pass
 
 
@@ -94,7 +104,10 @@ def patch(url,
           data=None,
           params=None,
           headers: Union[Headers, Mapping] = Headers(),
-          timeout: Optional[float] = None) -> AsyncRequest:
+          timeout: Optional[float] = None,
+          follow_redirects: bool = True,
+          redirects_limit: int = 5
+          ) -> AsyncRequest:
     pass
 
 
@@ -103,7 +116,10 @@ def put(url,
         data=None,
         params=None,
         headers: Union[Headers, Mapping] = Headers(),
-        timeout: Optional[float] = None) -> AsyncRequest:
+        timeout: Optional[float] = None,
+        follow_redirects: bool = True,
+        redirects_limit: int = 5
+        ) -> AsyncRequest:
     pass
 
 
@@ -112,7 +128,10 @@ def delete(url,
            data=None,
            params=None,
            headers: Union[Headers, Mapping] = Headers(),
-           timeout: Optional[float] = None) -> AsyncRequest:
+           timeout: Optional[float] = None,
+           follow_redirects: bool = True,
+           redirects_limit: int = 5
+           ) -> AsyncRequest:
     pass
 
 
@@ -121,7 +140,10 @@ def connect(url,
             data=None,
             params=None,
             headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None) -> AsyncRequest:
+            timeout: Optional[float] = None,
+            follow_redirects: bool = True,
+            redirects_limit: int = 5
+            ) -> AsyncRequest:
     pass
 
 
@@ -130,7 +152,10 @@ def options(url,
             data=None,
             params=None,
             headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None) -> AsyncRequest:
+            timeout: Optional[float] = None,
+            follow_redirects: bool = True,
+            redirects_limit: int = 5
+            ) -> AsyncRequest:
     pass
 
 
@@ -139,7 +164,10 @@ def trace(url,
           data=None,
           params=None,
           headers: Union[Headers, Mapping] = Headers(),
-          timeout: Optional[float] = None) -> AsyncRequest:
+          timeout: Optional[float] = None,
+          follow_redirects: bool = True,
+          redirects_limit: int = 5
+          ) -> AsyncRequest:
     pass
 
 
@@ -148,5 +176,8 @@ def head(url,
          data=None,
          params=None,
          headers: Union[Headers, Mapping] = Headers(),
-         timeout: Optional[float] = None) -> AsyncRequest:
+         timeout: Optional[float] = None,
+         follow_redirects: bool = True,
+         redirects_limit: int = 5
+         ) -> AsyncRequest:
     pass
