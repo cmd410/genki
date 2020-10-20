@@ -59,7 +59,12 @@ def parse_url(url: str) -> url_parse_result:
         raise InvalidURL(url)
 
     # Parse port
-    if ':' in host:
+    if '[' in host and (closing := host.find(']')) != -1:
+        if closing != len(host) - 1:
+            if host[closing + 1] == ':':
+                port = int(host[closing + 2:])
+                host = host[:closing + 1]
+    elif ':' in host:
         host, port_str = host.split(':', maxsplit=1)
         if not all([host, port_str]):
             raise InvalidURL(url)

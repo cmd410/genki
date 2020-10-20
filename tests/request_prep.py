@@ -10,7 +10,7 @@ from genki.http.exceptions import InvalidURL
 def generate_url():
     protos = ('http', 'https', '')
     domains = (
-        'example.com',
+        'example.com', '[2001:db8::]'
     )
     ports = (8080, 6204, '')
     usernames = ('username', '')
@@ -42,6 +42,7 @@ def generate_url():
         url += f'{path}{query}'
         if not port:
             port = 443 if proto == 'https' else 80
+
         yield url, url_parse_result(
             Protocol(proto),
             host,
@@ -61,11 +62,6 @@ class RequestPreparations(TestCase):
         for url, result in cases:
             with self.subTest(url=url):
                 r = parse_url(url)
-                if hash(r) != hash(result):
-                    print(url)
-                    print(r)
-                    print(result)
-                    print()
                 self.assertEqual(r, result)
 
     def test_invalid_urls(self):
