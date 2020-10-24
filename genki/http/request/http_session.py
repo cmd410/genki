@@ -47,13 +47,13 @@ class HTTPSession:
     def _init_session(self):
         """Establish TCP connection to server
         """
-        host, port = self.request.host, self.request.port
+        host, port = self.request.url.host, self.request.url.port
         self.conn = socket.create_connection(
             (host, port),
             timeout=self.timeout
             )
 
-        if self.request.protocol == Protocol.HTTPS:
+        if self.request.url.protocol == Protocol.HTTPS:
             self.conn = ssl.wrap_socket(self.conn)
 
         return self

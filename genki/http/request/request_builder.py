@@ -2,7 +2,7 @@ from typing import Union, Dict, Any
 from collections import namedtuple
 
 from ..constants import Method, StatusCode
-from .util import parse_url
+from ..url import URL
 from ..headers import Headers
 
 
@@ -18,19 +18,14 @@ class RequestBuilder:
         '_headers',
         '_method',
         '_body',
-        '_host',
-        'username',
-        'password',
         'protocol',
-        'path',
         'port',
         'http_version',
-        'query',
         'redirect_chain'
     )
 
     def __init__(self,
-                 url: str,
+                 url: Union[URL, str],
                  params: Dict[str, Any] = dict(),
                  headers: Union[
                      Headers,
@@ -41,53 +36,24 @@ class RequestBuilder:
                  http_version: str = '1.1'):
         self.headers = headers
         self.url = url
+        # TODO MessageBody class to handle different types of content
         self.body = body
         self.method = method
         self.http_version = http_version
         self.redirect_chain = []
 
     @property
-    def url(self) -> str:
+    def url(self) -> URL:
         return self._url
 
     @url.setter
-    def url(self, value: str):
-        parse_result = parse_url(value)
-
-        self.protocol = parse_result.protocol
-        self.host = parse_result.host
-        self.path = parse_result.path
-        self.port = parse_result.port
-        self.query = parse_result.query
-        self.username = parse_result.username
-        self.password = parse_result.password
-        
-        self.update_url()
-
-    def update_url(self):
-        self._url = f'{self.protocol}://'
-        if self.username:
-            self._url += f'{self.username}'
-            if self.password:
-                self._url += f':{self.password}'
-            self._url += '@'
-
-        self._url += self.host
-        if self.port not in {80, 443}:
-            self._url += f':{self.port}'
-
-        self._url += self.path
-        if self.query:
-            self._url += f'?{self.query}'
-
-    @property
-    def host(self) -> str:
-        return self._host
-
-    @host.setter
-    def host(self, value: str):
-        self._host = value
-        self.headers['Host'] = value
+    def url(self, value: Union[URL, str]):
+        if isinstance(value, str):
+            self._url = URL(value)
+        elif isinstance(value, URL):
+            self._url = value
+        else:
+            raise TypeError(f'Invalid type for URL {type(value)}')
 
     @property
     def headers(self) -> Headers:
@@ -140,12 +106,11 @@ class RequestBuilder:
             self.headers.remove_header('Content-Length')
 
     def redirect_to(self, code: StatusCode, location: str):
-        source = self.url
+        source = self.url.copy()
         if location.startswith('/'):
-            self.path = location
-            self.update_url()
+            self.url.path = location
         else:
-            self.url = location
+            self.url.string = location
         destination = self.url
         self.redirect_chain.append(redirect(source, destination, code))
 
@@ -164,8 +129,9 @@ class RequestBuilder:
         return self
 
     def to_bytes(self) -> bytes:
-        s: bytes = f'{self.method} {self.path} HTTP/{self.http_version}\r\n'\
+        s = f'{self.method} {self.url.path} HTTP/{self.http_version}\r\n'\
             .encode('ascii')
+        self._headers['Host'] = self.url.host
         self._headers.set_if_none('Connection', 'close')
         s += self.headers.to_bytes()
         if self.body:

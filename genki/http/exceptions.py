@@ -8,7 +8,3 @@ network_exceptions = (
     ConnectionAbortedError,
     ConnectionResetError
 )
-
-
-class InvalidURL(Exception):
-    pass
