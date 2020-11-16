@@ -1,16 +1,16 @@
 from unittest import TestCase
 from itertools import product
 
-from genki.http.request.util import parse_url, url_parse_result
+from genki.http.url.parse import parse_url, url_parse_result
 from genki.http.request import RequestBuilder
 from genki.http.constants import Protocol
-from genki.http.exceptions import InvalidURL
+from genki.http.url.exceptions import InvalidURL
 
 
 def generate_url():
     protos = ('http', 'https', '')
     domains = (
-        'example.com',
+        'example.com', '[2001:db8::]', '127.0.0.1'
     )
     ports = (8080, 6204, '')
     usernames = ('username', '')
@@ -20,10 +20,11 @@ def generate_url():
         '/some/path'
     )
     queries = ('', '?param=value')
+    fragments = ('', 'fragment')
 
-    for proto, user, password, host, port, path, query in \
+    for proto, user, password, host, port, path, query, fragment in \
             product(protos, usernames, passwords,
-                    domains, ports, paths, queries):
+                    domains, ports, paths, queries, fragments):
         url = ''
         if proto:
             url = f'{proto}://'
@@ -40,8 +41,11 @@ def generate_url():
         if port:
             url += f':{port}'
         url += f'{path}{query}'
+        if fragment:
+            url += f'#{fragment}'
         if not port:
             port = 443 if proto == 'https' else 80
+
         yield url, url_parse_result(
             Protocol(proto),
             host,
@@ -49,7 +53,8 @@ def generate_url():
             port,
             user,
             password if user else '',
-            query[1:])
+            query[1:],
+            fragment)
 
 
 class RequestPreparations(TestCase):
@@ -61,11 +66,6 @@ class RequestPreparations(TestCase):
         for url, result in cases:
             with self.subTest(url=url):
                 r = parse_url(url)
-                if hash(r) != hash(result):
-                    print(url)
-                    print(r)
-                    print(result)
-                    print()
                 self.assertEqual(r, result)
 
     def test_invalid_urls(self):
@@ -88,7 +88,7 @@ class RequestPreparations(TestCase):
     def test_to_bytes(self):
         """Test that request converts to bytes correctly
         """
-        s = 'GET {path} HTTP/1.1\r\nHost: {host}\r\n'
+        s = 'GET {path} HTTP/1.1\r\n'
 
         hosts = [
             'example.com',
@@ -106,18 +106,17 @@ class RequestPreparations(TestCase):
             url = host + path
             with self.subTest(url=url):
                 req = RequestBuilder(url)
-                req.set_header('Connection', 'close')
-                req.append_body('Hello world!')
-
+                if '://' in host:
+                    host = host[host.find('://') + 3:]
+                if ':' in host:
+                    host = host[:host.find(':')]
                 req_body = s.format(host=hosts[0], path=path)
                 self.assertEqual(req.to_bytes(), (
                     ''.join(
                         [
                             req_body,
+                            f'Host: {host}\r\n',
                             'Connection: close\r\n',
-                            f'Content-Length: {len(req.body)}',
-                            '\r\n\r\n',
-                            'Hello world!'
+                            '\r\n',
                         ]
                     ).encode()))
-                self.assertEqual(req.headers['Content-Length'], len('Hello world!'))
