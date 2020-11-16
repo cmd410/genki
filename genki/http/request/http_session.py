@@ -5,6 +5,7 @@ from gevent import socket, ssl, spawn
 from .request_builder import RequestBuilder
 from ..constants import Protocol
 from ..response import Response
+from ..headers import Headers
 from ..exceptions import network_exceptions
 
 
@@ -75,34 +76,44 @@ class HTTPSession:
         responce_bytes = b''
 
         # Read till headers end
-        while b'\r\n\r\n' not in responce_bytes:
-            responce_bytes += self.conn.recv(self.chunk_size)
-
-        headers_bytes, body_bytes = \
-            responce_bytes.split(b'\r\n\r\n', maxsplit=1)
-
-        # Figure out how much data left
-        body_length = 0
-        for line in headers_bytes.split(b'\r\n'):
-            if line.lower().startswith(b'content-length:'):
-                body_length = int(
-                    line.split(b':', maxsplit=1)[1]
-                        .strip())
+        while True:
+            new_data = self.conn.recv(1)
+            responce_bytes += new_data
+            if responce_bytes.endswith(b'\r\n\r\n'):
                 break
 
-        if body_length:
-            # Read remaining body
+        is_chunked = False
+        body_length = 0
+
+        responce_headers = Headers.from_bytes(responce_bytes)
+        if responce_headers.get('Transfer-Encoding') == 'chunked':
+            is_chunked = True
+        elif (bl := responce_headers.get('Content-Length')) is not None:
+            body_length = bl
+
+        if is_chunked:
+            chunks = []
+            while True:
+                chunk = b''
+                while not chunk.endswith(b'\r\n'):
+                    chunk += self.conn.recv(1)
+                if chunk == b'0\r\n':
+                    break
+                chunks.append(chunk)       
+            responce_bytes += b''.join(
+                [
+                    chunk[:-2] for i, chunk in enumerate(chunks)
+                    if i % 2 != 0
+                ])
+        elif body_length:
+            body_bytes = b''
             while len(body_bytes) < body_length:
                 body_bytes += self.conn.recv(self.chunk_size)
-        elif not responce_bytes.endswith(b'\r\n\r\n'):
-            while True:
-                new_data = self.conn.recv(self.chunk_size)
-                if not new_data:
-                    break
-                body_bytes += new_data
+            responce_bytes += body_bytes
+
         self.responce = Response(
             self.request,
-            headers_bytes+b'\r\n\r\n'+body_bytes
+            responce_bytes, headers=responce_headers
         )
 
     def _end_session(self):

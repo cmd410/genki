@@ -19,7 +19,10 @@ class Response:
         '_body'
     )
 
-    def __init__(self, request: RequestBuilder, raw_bytes: bytes):
+    def __init__(self,
+                 request: RequestBuilder,
+                 raw_bytes: bytes,
+                 headers: Optional[Headers] = None):
         self.request = request
         self.raw_bytes = raw_bytes
 
@@ -30,7 +33,10 @@ class Response:
                     :headers_bytes.find(b'\r\n')
                     ].split(b' ', maxsplit=2)[1].decode())
                 )
-        self.headers = Headers.from_bytes(headers_bytes)
+        if headers is None:
+            self.headers = Headers.from_bytes(headers_bytes)
+        else:
+            self.headers = headers
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.status_code})'
@@ -63,7 +69,6 @@ class Response:
                     # detect large content
                     detector = UniversalDetector()
                     for i in range(0, len(self._body), 1024):
-                        print(i)
                         detector.feed(self._body[i:i+1024])
                         if detector.done:
                             break
