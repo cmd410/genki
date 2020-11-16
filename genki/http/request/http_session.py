@@ -52,7 +52,7 @@ class HTTPSession:
             (host, port),
             timeout=self.timeout
             )
-        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
         if self.request.url.protocol == Protocol.HTTPS:
             self.conn = ctx.wrap_socket(self.conn, server_hostname=host)
 
