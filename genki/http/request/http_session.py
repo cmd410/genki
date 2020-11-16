@@ -94,7 +94,12 @@ class HTTPSession:
             # Read remaining body
             while len(body_bytes) < body_length:
                 body_bytes += self.conn.recv(self.chunk_size)
-
+        elif not responce_bytes.endswith(b'\r\n\r\n'):
+            while True:
+                new_data = self.conn.recv(self.chunk_size)
+                if not new_data:
+                    break
+                body_bytes += new_data
         self.responce = Response(
             self.request,
             headers_bytes+b'\r\n\r\n'+body_bytes
