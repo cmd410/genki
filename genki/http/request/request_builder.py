@@ -18,7 +18,7 @@ class RequestBuilder:
         '_headers',
         '_method',
         '_body',
-        'protocol',
+        'scheme',
         'port',
         'http_version',
         'redirect_chain'
@@ -132,7 +132,7 @@ class RequestBuilder:
         s = f'{self.method} {self.url.path} HTTP/{self.http_version}\r\n'\
             .encode('ascii')
         self._headers['Host'] = self.url.host
-        self._headers.set_if_none('Connection', 'close')
+        self._headers.setdefault('Connection', 'close')
         s += self.headers.to_bytes()
         if self.body:
             s += self.body

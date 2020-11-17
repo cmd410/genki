@@ -1,5 +1,5 @@
 from enum import Enum
 
-class Protocol(str, Enum):
+class Scheme(str, Enum):
     HTTPS = 'https'
     HTTP = 'http'

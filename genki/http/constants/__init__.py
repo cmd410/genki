@@ -1,3 +1,3 @@
 from .method import Method
-from .protocol import Protocol
+from .scheme import Scheme
 from .status_code import StatusCode
