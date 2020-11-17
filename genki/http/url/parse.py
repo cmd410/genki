@@ -10,6 +10,12 @@ url_parse_result = namedtuple(
      'username', 'password', 'query', 'fragment'])
 
 
+default_ports = {
+    Scheme.HTTP: 80,
+    Scheme.HTTPS: 443
+}
+
+
 def parse_url(url: str) -> url_parse_result:
     """Parses given url, returns namedtuple of
     (scheme, host, path, port, username, password)
@@ -17,16 +23,16 @@ def parse_url(url: str) -> url_parse_result:
     url = str(url).strip()
 
     # Parse scheme
-    proto: Scheme = Scheme.HTTP
+    scheme: Scheme = Scheme.HTTP
     if '://' in url:
         s = url.split('://', maxsplit=1)
-        proto = Scheme(s[0].lower())
+        scheme = Scheme(s[0].lower())
         host = s[1]
     else:
         host = url
 
     # Assume port based on scheme
-    port = 443 if proto == Scheme.HTTPS else 80
+    port = default_ports[scheme]
 
     if not host:
         raise InvalidURL(url)
@@ -86,7 +92,7 @@ def parse_url(url: str) -> url_parse_result:
             path = path[:fragment_idx]
 
     return url_parse_result(
-        proto,
+        scheme,
         host,
         path,
         port,
