@@ -5,6 +5,12 @@ with open('README.md', 'r') as file:
     long_description = file.read()
 
 
+packages = [
+    i
+    for i in setuptools.find_packages()
+    if i.startswith('genki')
+]
+
 requires = [
     'cffi==1.14.3',
     'gevent==20.9.0',
@@ -25,7 +31,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     install_requires=requires,
     url='https://github.com/cmd410/genki',
-    packages=['genki', 'genki.http', 'genki.http.request'],
+    packages=packages,
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
