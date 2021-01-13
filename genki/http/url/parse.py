@@ -1,32 +1,38 @@
 from collections import namedtuple
 
-from ..constants import Protocol
+from ..constants import Scheme
 from .exceptions import InvalidURL
 
 
 url_parse_result = namedtuple(
     'URLParseResult',
-    ['protocol', 'host', 'path', 'port',
+    ['scheme', 'host', 'path', 'port',
      'username', 'password', 'query', 'fragment'])
+
+
+default_ports = {
+    Scheme.HTTP: 80,
+    Scheme.HTTPS: 443
+}
 
 
 def parse_url(url: str) -> url_parse_result:
     """Parses given url, returns namedtuple of
-    (protocol, host, path, port, username, password)
+    (scheme, host, path, port, username, password)
     """
     url = str(url).strip()
 
-    # Parse protocol
-    proto: Protocol = Protocol.HTTP
+    # Parse scheme
+    scheme: Scheme = Scheme.HTTP
     if '://' in url:
         s = url.split('://', maxsplit=1)
-        proto = Protocol(s[0].lower())
+        scheme = Scheme(s[0].lower())
         host = s[1]
     else:
         host = url
 
-    # Assume port based on protocol
-    port = 443 if proto == Protocol.HTTPS else 80
+    # Assume port based on scheme
+    port = default_ports[scheme]
 
     if not host:
         raise InvalidURL(url)
@@ -86,7 +92,7 @@ def parse_url(url: str) -> url_parse_result:
             path = path[:fragment_idx]
 
     return url_parse_result(
-        proto,
+        scheme,
         host,
         path,
         port,

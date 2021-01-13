@@ -2,23 +2,13 @@ from collections import OrderedDict
 from typing import Union, Mapping, Dict
 
 
-class Headers:
-    __slots__ = ('_headers')
-
-    @property
-    def headers(self):
-        return self._headers
-
-    @headers.setter
-    def headers(self, value: Mapping[str, Union[str, int]]):
-        self._headers: OrderedDict = OrderedDict(**value)
-
+class Headers(OrderedDict):
     @classmethod
     def from_bytes(cls, b: bytes):
         if b'\r\n\r\n' in b:
             b = b[:b.find(b'\r\n\r\n')]
 
-        headers: Dict[str, Union[str, int]] = OrderedDict()
+        headers: Dict[str, Union[str, int]] = Headers()
         for line in b.split(b'\r\n'):
             if b':' in line:
                 header, *value = line.split(b':', maxsplit=1)
@@ -38,13 +28,13 @@ class Headers:
                     headers[header_str] = value_int
                 else:
                     headers[header_str] = value_str
-        return Headers(headers)
+        return headers
 
     def to_str(self):
         s = '\r\n'.join(
             [
                 f'{key}: {value}'
-                for key, value in self.headers.items()
+                for key, value in self.items()
             ]
         )
         s += '\r\n\r\n'
@@ -53,30 +43,12 @@ class Headers:
     def to_bytes(self):
         return self.to_str().encode()
 
-    def get(self, key, default=None):
-        return self.headers.get(key, default)
-
-    def set_if_none(self, key, value):
-        if key not in self.headers.keys():
-            self.headers[key] = value
-
-    def remove_header(self, key: str):
-        self._headers.pop(key)
-
     def __bool__(self):
         return bool(self.headers)
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.headers})'
 
-    def __init__(self, headers: dict = dict()):
-        self.headers = headers
-
-    def __getitem__(self, key):
-        return self.headers[key]
-
-    def __setitem__(self, key, value):
-        self.headers[key] = value
-
-    def __contains__(self, item):
-        return item in self.headers.keys()
+    def __init__(self, headers: Mapping = dict()):
+        for key, value in headers.items():
+            self[key] = value

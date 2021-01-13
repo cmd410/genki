@@ -3,7 +3,7 @@ from typing import Optional, Union
 from gevent import socket, ssl, spawn
 
 from .request_builder import RequestBuilder
-from ..constants import Protocol
+from ..constants import Scheme
 from ..response import Response
 from ..headers import Headers
 from ..exceptions import network_exceptions
@@ -54,7 +54,7 @@ class HTTPSession:
             timeout=self.timeout
             )
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
-        if self.request.url.protocol == Protocol.HTTPS:
+        if self.request.url.scheme == Scheme.HTTPS:
             self.conn = ctx.wrap_socket(self.conn, server_hostname=host)
 
         return self
@@ -137,8 +137,7 @@ class HTTPSession:
         finally:
             self._end_session()
 
-        if 300 < self.responce.status_code < 400 \
-                and self.follow_redirects:
+        if self.follow_redirects and 300 < self.responce.status_code < 400:
             if self.redirects_limit:
                 if len(self.request.redirect_chain) >= self.redirects_limit:
                     return self.responce

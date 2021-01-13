@@ -3,7 +3,7 @@ from itertools import product
 
 from genki.http.url.parse import parse_url, url_parse_result
 from genki.http.request import RequestBuilder
-from genki.http.constants import Protocol
+from genki.http.constants import Scheme
 from genki.http.url.exceptions import InvalidURL
 
 
@@ -47,7 +47,7 @@ def generate_url():
             port = 443 if proto == 'https' else 80
 
         yield url, url_parse_result(
-            Protocol(proto),
+            Scheme(proto),
             host,
             path,
             port,

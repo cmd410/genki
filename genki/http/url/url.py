@@ -1,7 +1,7 @@
 from typing import AnyStr, Union
 from copy import copy
 
-from ..constants import Protocol
+from ..constants import Scheme
 from .parse import parse_url
 
 
@@ -9,7 +9,7 @@ class URL:
 
     __slots__ = (
         '_string',
-        '_protocol',
+        '_scheme',
         '_host',
         '_path',
         '_port',
@@ -41,26 +41,9 @@ class URL:
             self.update()
         return self._string
 
-    @string.setter
-    def string(self, value: AnyStr):
-        if isinstance(value, bytes):
-            value = value.decode()
-
-        parse_result = parse_url(value)
-        self._protocol = parse_result.protocol
-        self._host = parse_result.host
-        self._path = parse_result.path
-        self._port = parse_result.port
-        self._query = parse_result.query
-        self._username = parse_result.username
-        self._password = parse_result.password
-        self._fragment = parse_result.fragment
-
-        self._dirty = True
-
     @property
-    def protocol(self):
-        return self._protocol
+    def scheme(self):
+        return self._scheme
 
     @property
     def host(self):
@@ -90,47 +73,70 @@ class URL:
     def fragment(self):
         return self._fragment
 
-    @protocol.setter
-    def protocol(self, value):
-        self._protocol = Protocol(value.lower())
-        self._dirty = True
+    @string.setter
+    def string(self, value: AnyStr):
+        if isinstance(value, bytes):
+            value = value.decode()
+
+        parse_result = parse_url(value)
+        self._scheme = parse_result.scheme
+        self._host = parse_result.host
+        self._path = parse_result.path
+        self._port = parse_result.port
+        self._query = parse_result.query
+        self._username = parse_result.username
+        self._password = parse_result.password
+        self._fragment = parse_result.fragment
+
+    @scheme.setter
+    def scheme(self, value):
+        if self._scheme != value:
+            self._dirty = True
+        self._scheme = Scheme(value.lower())
 
     @host.setter
     def host(self, value):
+        if self._host != value:
+            self._dirty = True
         self._host = value
-        self._dirty = True
 
     @path.setter
     def path(self, value):
         if not value.startswith('/'):
             value = f'/{value}'
+        if self._path != value:
+            self._dirty = True
         self._path = value
-        self._dirty = True
 
     @port.setter
     def port(self, value):
+        if self._port != value:
+            self._dirty = True
         self._port = int(value)
-        self._dirty = True
 
     @query.setter
     def query(self, value):
+        if self._query != value:
+            self._dirty = True
         self._query = value
-        self._dirty = True
 
     @username.setter
     def username(self, value):
+        if self._username != value:
+            self._dirty = True
         self._username = value
-        self._dirty = True
 
     @password.setter
     def password(self, value):
+        if self._password != value:
+            self._dirty = True
         self._password = value
-        self._dirty = True
 
     @fragment.setter
     def fragment(self, value):
+        if self._fragment != value:
+            self._dirty = True
         self._fragment = value
-        self._dirty = True
 
     def update(self):
         """Rebuilds url string
@@ -145,14 +151,14 @@ class URL:
             userinfo_str = ''
 
         if any([
-                self.port == 443 and self.protocol == 'https',
-                self.port == 80 and self.protocol == 'http'
+                self.port == 443 and self.scheme == 'https',
+                self.port == 80 and self.scheme == 'http'
                 ]):
             port_str = ''
         else:
             port_str = f':{self.port}'
 
-        url = f'{self.protocol}://{userinfo_str}{self.host}{port_str}' +\
+        url = f'{self.scheme}://{userinfo_str}{self.host}{port_str}' +\
             f'{self.path}'
 
         if self.query:

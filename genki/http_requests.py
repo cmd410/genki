@@ -57,7 +57,7 @@ def request_method(method: Method):
                         method=method)
 
             if is_json:
-                builder.headers.set_if_none(
+                builder.headers.setdefault(
                     'Content-Type',
                     'application/json; charset=UTF-8'
                 )
@@ -132,52 +132,4 @@ def delete(url,
            follow_redirects: bool = True,
            redirects_limit: int = 5
            ) -> AsyncRequest:
-    pass
-
-
-@request_method(Method.CONNECT)
-def connect(url,
-            data=None,
-            params=None,
-            headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None,
-            follow_redirects: bool = True,
-            redirects_limit: int = 5
-            ) -> AsyncRequest:
-    pass
-
-
-@request_method(Method.OPTIONS)
-def options(url,
-            data=None,
-            params=None,
-            headers: Union[Headers, Mapping] = Headers(),
-            timeout: Optional[float] = None,
-            follow_redirects: bool = True,
-            redirects_limit: int = 5
-            ) -> AsyncRequest:
-    pass
-
-
-@request_method(Method.TRACE)
-def trace(url,
-          data=None,
-          params=None,
-          headers: Union[Headers, Mapping] = Headers(),
-          timeout: Optional[float] = None,
-          follow_redirects: bool = True,
-          redirects_limit: int = 5
-          ) -> AsyncRequest:
-    pass
-
-
-@request_method(Method.HEAD)
-def head(url,
-         data=None,
-         params=None,
-         headers: Union[Headers, Mapping] = Headers(),
-         timeout: Optional[float] = None,
-         follow_redirects: bool = True,
-         redirects_limit: int = 5
-         ) -> AsyncRequest:
     pass

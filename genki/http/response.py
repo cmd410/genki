@@ -10,6 +10,8 @@ from .request import RequestBuilder
 
 
 class Response:
+    """Class represents reponse from server
+    """
 
     __slots__ = (
         'status_code',
@@ -80,14 +82,22 @@ class Response:
 
     @property
     def content_type(self) -> str:
+        """Shorthand for getting Content-Type headers
+        """
         return self.headers.get('Content-Type', '')
 
     @property
     def is_html(self) -> bool:
+        """True if Content-Type is \"text/html\"
+        """
         return self.content_type.strip().startswith('text/html')
 
     @property
     def charset(self) -> Optional[str]:
+        """Tries to read body charset
+        from Content-Type header and returns it.
+        If no charset found in headers, returns None
+        """
         content_type = self.content_type
         if content_type is None:
             return None
