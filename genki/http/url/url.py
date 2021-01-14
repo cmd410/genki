@@ -87,6 +87,7 @@ class URL:
         self._username = parse_result.username
         self._password = parse_result.password
         self._fragment = parse_result.fragment
+        self.update()
 
     @scheme.setter
     def scheme(self, value):
